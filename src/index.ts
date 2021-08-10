@@ -10,6 +10,13 @@ const chainIdToNetwork: { [network: number]: NetworkName } = {
   4: 'rinkeby',
   42: 'kovan'
 }
+const availableNetwork: { [network: number]: string } = {
+  1: 'mainnet',
+  3: 'ropsten',
+  4: 'rinkeby',
+  42: 'kovan',
+  137: 'polygon'
+}
 
 interface MagicConnectorArguments {
   apiKey: string
@@ -57,7 +64,7 @@ export class MagicConnector extends AbstractConnector {
   public magic: any
 
   constructor({ apiKey, chainId, email }: MagicConnectorArguments) {
-    invariant(Object.keys(chainIdToNetwork).includes(chainId.toString()), `Unsupported chainId ${chainId}`)
+    invariant(Object.keys(availableNetwork).includes(chainId.toString()), `Unsupported chainId ${chainId}`)
     invariant(email && email.includes('@'), `Invalid email: ${email}`)
     super({ supportedChainIds: [chainId] })
 
@@ -71,7 +78,16 @@ export class MagicConnector extends AbstractConnector {
     const { Magic, RPCError, RPCErrorCode } = MagicSDK
 
     if (!this.magic) {
-      this.magic = new Magic(this.apiKey, { network: chainIdToNetwork[this.chainId] })
+      if (availableNetwork[this.chainId] == 'polygon') {
+        const customNodeOptions = {
+          rpcUrl: 'https://rpc-mainnet.maticvigil.com/', // Polygon RPC URL
+          chainId: 137, // Polygon chain id
+        }
+        this.magic = new Magic(this.apiKey, { network: customNodeOptions })
+      } else {
+        this.magic = new Magic(this.apiKey, { network: chainIdToNetwork[this.chainId] })
+      }
+      
     }
 
     const isLoggedIn = await this.magic.user.isLoggedIn()
