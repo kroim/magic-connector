@@ -39,7 +39,6 @@
     "@web3-react/types": "^6.0.7",
     "magic-sdk": "^2.4.7",
     "tiny-invariant": "^1.0.6",
-    "@types/jest": "^24.0.21",
     "@types/react": "^16.9.11",
     "@types/react-dom": "^16.9.4",
     "lerna": "^3.19.0",
